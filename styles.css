@@ -1,0 +1,567 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #222;
+    min-height: 100dvh;
+    overflow: hidden;   /* el botón de ayuda sobresale un poco del escenario */
+}
+
+/* El juego se diseñó a 1400x800. --u equivale a 1px de ese diseño:
+   todo se escala con el escenario para que la composición no cambie
+   en pantallas más chicas. */
+:root {
+    --ancho: min(95vw, 95dvh * 1.75, 1400px);
+    --u: calc(var(--ancho) / 1400);
+}
+
+#juego {
+    position: relative;
+    width: var(--ancho);
+    aspect-ratio: 7 / 4;
+}
+
+/* Fondo */
+#fondo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2%;
+    display: block;
+}
+
+/* Incisos */
+#incisos {
+    position: absolute;
+    top: 50%;
+    right: 3%;
+    transform: translateY(-50%);
+    width: calc(300 * var(--u));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    aspect-ratio: 1 / 1;
+    z-index: 10;
+    transition: opacity 0.4s ease;
+}
+
+#incisos.oculto {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.inciso {
+    position: relative;
+    width: 100%;
+    padding-top: calc(20 * var(--u));
+    padding-bottom: calc(20 * var(--u));
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.inciso img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Texto de la opción, a la derecha de la letra */
+.texto-inciso {
+    position: absolute;
+    top: calc(20 * var(--u));
+    bottom: calc(20 * var(--u));
+    left: 22%;
+    right: 5%;
+    display: flex;
+    align-items: center;
+    font-family: sans-serif;
+    font-size: max(10px, calc(20 * var(--u)));
+    color: #3b2412;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Solo con mouse: en pantallas táctiles el hover se queda "pegado" */
+@media (hover: hover) {
+    .inciso:hover {
+        transform: scale(1.05);
+    }
+
+    .ayuda1:hover {
+        transform: scale(1.15);
+    }
+}
+
+.inciso.deshabilitado {
+    pointer-events: none;
+}
+
+/* Vidas */
+#vidas {
+    position: absolute;
+    top: 5%;
+    left: 3%;
+    width: calc(165 * var(--u));
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    z-index: 10;
+}
+
+.vida {
+    width: calc(50 * var(--u));
+    height: calc(50 * var(--u));
+    object-fit: contain;
+}
+
+/* Ayuda */
+
+.ayuda1 {
+    width: calc(50 * var(--u));
+    height: calc(50 * var(--u));
+    object-fit: contain;
+    cursor: pointer;
+}
+
+#ayuda {
+    position: absolute;
+    top: 5%;
+    right: -5%;
+    width: calc(165 * var(--u));
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    z-index: 10;
+}
+
+/* Parpadeo del corazón antes de perderse */
+@keyframes parpadeoVida {
+    0%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.2; }
+    50% { opacity: 1; }
+}
+
+.vida.parpadeando {
+    animation: parpadeoVida 0.5s ease-in-out 2;
+}
+
+/* Pregunta */
+#preguntas {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: calc(165 * var(--u));
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    z-index: 10;
+    transition: opacity 0.4s ease;
+}
+
+#preguntas.oculto {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pregunta {
+    width: calc(400 * var(--u));
+    height: calc(400 * var(--u));
+    object-fit: contain;
+}
+
+/* Texto encima del óvalo (el óvalo ocupa ~400x238 centrado en la imagen de 400x400) */
+#textoPregunta {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(400 * var(--u));
+    height: calc(400 * var(--u));
+    box-sizing: border-box;
+    padding: 0 calc(70 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: max(11px, calc(22 * var(--u)));
+    line-height: 1.4;
+    color: #3b2412;
+}
+
+/* Nivel actual */
+#nivelActual {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(200 * var(--u));
+    z-index: 10;
+}
+
+/* Modal de ayuda */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.modal[hidden] {
+    display: none;
+}
+
+.modal-contenido {
+    position: relative;
+    width: min(560px, 90%);
+    max-height: 90dvh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 24px 28px;
+    background: #e8d2a0;
+    border: 4px solid #5a3a1e;
+    border-radius: 12px;
+    box-shadow: 0 6px 0 #3b2412;
+    font-family: sans-serif;
+    color: #3b2412;
+}
+
+.modal-contenido h2 {
+    margin: 0 0 8px;
+}
+
+.modal-conceptos {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.modal-cerrar {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    border: none;
+    background: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #3b2412;
+    cursor: pointer;
+}
+
+/* Retroalimentación final */
+.modal-contenido h3 {
+    margin: 16px 0 6px;
+    font-size: 17px;
+}
+
+.retro-mensaje {
+    font-weight: bold;
+}
+
+.retro-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+}
+
+.retro-tabla th,
+.retro-tabla td {
+    padding: 4px 8px;
+    border-bottom: 2px solid #c9ad76;
+    text-align: left;
+}
+
+.retro-tabla tr.retro-debil td {
+    color: #a3261b;
+}
+
+.retro-fallidas {
+    padding-left: 20px;
+    line-height: 1.5;
+}
+
+.retro-fallidas li {
+    margin-bottom: 8px;
+}
+
+.retro-detalle {
+    font-size: 14px;
+}
+
+.retro-boton {
+    display: block;
+    margin: 18px auto 0;
+    padding: 10px 24px;
+    border: 3px solid #5a3a1e;
+    border-radius: 8px;
+    background: #8a3b12;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.retro-boton:hover {
+    background: #a3481a;
+}
+
+/* Scrollbar de la retro, con los colores del modal */
+/* Firefox. Va dentro de @supports porque Chrome ignora los ::-webkit-scrollbar
+   si también tiene scrollbar-color/scrollbar-width */
+@supports not selector(::-webkit-scrollbar) {
+    #retroContenido {
+        scrollbar-width: thin;
+        scrollbar-color: #8a3b12 #d9bf86;
+    }
+}
+
+#retroContenido::-webkit-scrollbar {        /* Chrome, Edge, Safari */
+    width: 12px;
+}
+
+#retroContenido::-webkit-scrollbar-track {
+    background: #d9bf86;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+#retroContenido::-webkit-scrollbar-thumb {
+    background: #8a3b12;
+    border: 3px solid #d9bf86;
+    border-radius: 8px;
+}
+
+#retroContenido::-webkit-scrollbar-thumb:hover {
+    background: #a3481a;
+}
+
+/* Resultados */
+#resultados {
+    position: absolute;
+    top: -10%;
+    left: 22%;
+    width: calc(400 * var(--u));
+    aspect-ratio: 1 / 1;
+    transform: translate(50%, 75%);
+    z-index: 50;
+}
+
+.resultado {
+    display: none;
+    width: calc(400 * var(--u));
+    height: calc(400 * var(--u));
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.resultado.mostrar {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+
+/* Disparos */
+#disparos {
+    position: absolute;
+    width: calc(400 * var(--u));
+    aspect-ratio: 1 / 1;
+    top: -2%;
+    left: 2%;
+    transform: translate(50%, 75%);
+    z-index: 25;
+}
+
+.disparoNormal,
+.disparoIncorrecto,
+.disparoCorrecto {
+    display: none;
+    position: absolute;
+    object-fit: contain;
+}
+
+.disparoNormal.mostrar,
+.disparoIncorrecto.mostrar,
+.disparoCorrecto.mostrar {
+    display: block;
+}
+
+.disparoNormal {
+    top: 4.5%;
+    left: 2.0%;
+    width: calc(180 * var(--u));
+    height: calc(400 * var(--u));
+}
+
+.disparoIncorrecto {
+    top: 4%;
+    left: 7%;
+    width: calc(300 * var(--u));
+    height: calc(400 * var(--u));
+}
+
+.disparoCorrecto {
+    top: -1%;
+    left: 1%;
+    width: calc(180 * var(--u));
+    height: calc(400 * var(--u));
+}
+/* Selección de nivel */
+.selector-niveles {
+    text-align: center;
+}
+
+.boton-nivel {
+    display: block;
+    margin: 12px auto;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.boton-nivel img {
+    display: block;
+    width: 220px;
+}
+
+.boton-nivel:hover {
+    transform: scale(1.08);
+}
+
+/* Instrucciones y créditos */
+.botones-info {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.boton-info {
+    padding: 8px 18px;
+    border: 3px solid #5a3a1e;
+    border-radius: 8px;
+    background: #8a3b12;
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton-info:hover {
+    background: #a3481a;
+}
+
+.lista-info {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.creditos {
+    text-align: center;
+}
+
+.creditos h3 {
+    margin-bottom: 2px;
+}
+
+.creditos p {
+    margin: 0;
+}
+
+.creditos-licencia {
+    margin-top: 18px !important;
+    font-size: 14px;
+}
+
+/* Aviso para girar el dispositivo (celulares en vertical) */
+#girar {
+    display: none;
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+    #girar {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 24px;
+        box-sizing: border-box;
+        background: #222;
+        color: #e8d2a0;
+        font-family: sans-serif;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .girar-icono {
+        width: 48px;
+        height: 80px;
+        border: 4px solid #e8d2a0;
+        border-radius: 10px;
+        animation: girarIcono 2s ease-in-out infinite;
+    }
+}
+
+@keyframes girarIcono {
+    0%, 20% { transform: rotate(0deg); }
+    50%, 80% { transform: rotate(90deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Pantallas chicas (celular horizontal, tabletas pequeñas) */
+@media (max-width: 700px), (max-height: 500px) {
+    .modal-contenido {
+        width: min(560px, 94vw);
+        padding: 16px 18px;
+        font-size: 14px;
+    }
+
+    .modal-contenido h2 {
+        font-size: 20px;
+    }
+
+    .modal-contenido h3 {
+        font-size: 15px;
+        margin-top: 10px;
+    }
+
+    .boton-nivel {
+        margin: 6px auto;
+    }
+
+    .boton-nivel img {
+        width: 150px;
+    }
+
+    .boton-info,
+    .retro-boton {
+        font-size: 14px;
+        padding: 8px 14px;
+    }
+}

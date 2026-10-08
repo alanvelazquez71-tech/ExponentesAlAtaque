@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Exponentes al ataque</title>
+
+    <!-- KaTeX: renderiza las expresiones matemáticas (exponentes, raíces, fracciones) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Solo se muestra en celulares en vertical (ver styles.css) -->
+    <div id="girar">
+        <div class="girar-icono"></div>
+        <p>Gira tu dispositivo para jugar</p>
+    </div>
+
+    <div id="juego">
+
+        <!-- Fondo -->
+        <img id="fondo" src="./public/fondo/FONDO.png" alt="Fondo">
+
+        <!-- Nivel actual -->
+        <img id="nivelActual" src="./public/niveles/N1.png" alt="Nivel 1" hidden>
+
+        <!-- Indicadores encima del fondo -->
+        <div id="incisos">
+
+            <div class="inciso" id="indicador1" data-letra="A">
+                <img src="./public/incisos/A-NORMAL.png" alt="A">
+                <span class="texto-inciso"></span>
+            </div>
+            <div class="inciso" id="indicador2" data-letra="B">
+                <img src="./public/incisos/B-NORMAL.png" alt="B">
+                <span class="texto-inciso"></span>
+            </div>
+            <div class="inciso" id="indicador3" data-letra="C">
+                <img src="./public/incisos/C-NORMAL.png" alt="C">
+                <span class="texto-inciso"></span>
+            </div>
+            <div class="inciso" id="indicador4" data-letra="D">
+                <img src="./public/incisos/D-NORMAL.png" alt="D">
+                <span class="texto-inciso"></span>
+            </div>
+        </div>
+
+        <div id="vidas">
+
+            <img class="vida" id="vida" src="./public/vidas/VIDA.png">
+
+            <img class="vida" id="vida2" src="./public/vidas/VIDA.png">
+
+            <img class="vida" id="vida3" src="./public/vidas/VIDA.png">
+
+
+        </div>
+
+        <div id="ayuda">
+
+            <img class="ayuda1" id="btnAyuda" src="./public/ayuda/SIGNO.png" alt="Ayuda">
+
+        </div>
+
+        <div id="preguntas">
+
+            <img class="pregunta" id="pregunta" src="./public/pregunta/RECUADRO PREGUNTA.png">
+            <div id="textoPregunta">Cargando...</div>
+
+        </div>
+
+
+        <div id="resultados">
+
+            <img class="resultado" id="correcto1" src="./public/resultado/correcto/CORRECTO.png">
+            <img class="resultado" id="correcto2" src="./public/resultado/correcto/CORRECTO 2.png">
+            <img class="resultado" id="correcto3" src="./public/resultado/correcto/CORRECTO 3.png">
+            <img class="resultado" id="incorrecto" src="./public/resultado/incorrecto/INCORRECTO2.png">
+
+
+        </div>
+
+        <div id="disparos">
+            <img class="disparoNormal" id="disparoNormal" src="./public/disparo/HUMO NORMAL.png">
+            <img class="disparoCorrecto" id="disparoCorrecto" src="./public/disparo/HUMO VERDE CORRECTO.png">
+            <img class="disparoIncorrecto" id="disparoIncorrecto" src="./public/disparo/HUMO GRIS INCORRECTO.png">
+        </div>
+
+        <!-- Modal de ayuda -->
+        <div id="modalAyuda" class="modal" hidden>
+            <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+                <button class="modal-cerrar" id="cerrarAyuda" aria-label="Cerrar">&times;</button>
+                <h2 id="modalTitulo">Ayuda</h2>
+                <p id="modalResultado"></p>
+                <ul class="modal-conceptos">
+                    <li><strong>Coeficiente:</strong> el número que multiplica a la variable. En <span class="tex">5x^{3}</span> es <span class="tex">5</span>.</li>
+                    <li><strong>Base:</strong> lo que se multiplica por sí mismo. En <span class="tex">5x^{3}</span> es <span class="tex">x</span>.</li>
+                    <li><strong>Exponente:</strong> cuántas veces se multiplica la base. En <span class="tex">5x^{3}</span> es <span class="tex">3</span>.</li>
+                    <li><strong>Potencia:</strong> la multiplicación repetida. <span class="tex">x^{3} = x \cdot x \cdot x</span>.</li>
+                    <li><strong>Radical:</strong> el signo de raíz <span class="tex">\sqrt{\ }</span>.</li>
+                    <li><strong>Radicando:</strong> lo que está dentro de la raíz. En <span class="tex">\sqrt[3]{5x^{2}}</span> es <span class="tex">5x^{2}</span>.</li>
+                    <li><strong>Índice:</strong> el número pequeño de la raíz. En <span class="tex">\sqrt[3]{5x^{2}}</span> es <span class="tex">3</span>; si no aparece, es <span class="tex">2</span>.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Selección de nivel (al iniciar) -->
+        <div id="modalNiveles" class="modal">
+            <div class="modal-contenido selector-niveles" role="dialog" aria-modal="true" aria-labelledby="nivelesTitulo">
+                <h2 id="nivelesTitulo">Elige un nivel</h2>
+                <p>Cada nivel tiene 8 preguntas elegidas al azar.</p>
+                <button class="boton-nivel" data-nivel="1"><img src="./public/niveles/N1.png" alt="Nivel 1"></button>
+                <button class="boton-nivel" data-nivel="2"><img src="./public/niveles/N2.png" alt="Nivel 2"></button>
+                <button class="boton-nivel" data-nivel="3"><img src="./public/niveles/N3.png" alt="Nivel 3"></button>
+                <div class="botones-info">
+                    <button class="boton-info" data-abrir="modalInstrucciones">Instrucciones</button>
+                    <button class="boton-info" data-abrir="modalCreditos">Créditos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de retroalimentación al terminar (se llena desde juego.js) -->
+        <div id="modalRetro" class="modal" hidden>
+            <div class="modal-contenido" id="retroContenido" role="dialog" aria-modal="true"></div>
+        </div>
+
+        <!-- Instrucciones -->
+        <div id="modalInstrucciones" class="modal modal-info" hidden>
+            <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="instruccionesTitulo">
+                <button class="modal-cerrar" aria-label="Cerrar">&times;</button>
+                <h2 id="instruccionesTitulo">Instrucciones</h2>
+
+                <h3>¿En qué consiste?</h3>
+                <p>El juego pone a prueba lo que sabes sobre la notación de exponentes y radicales:
+                    identificar la base, el coeficiente, el exponente, la potencia, el radicando y el índice
+                    del radical en distintas expresiones.</p>
+
+                <h3>¿Cómo se juega?</h3>
+                <ol class="lista-info">
+                    <li>Elige uno de los tres niveles. Cada nivel tiene 8 preguntas elegidas al azar.</li>
+                    <li>Lee la pregunta que aparece en el recuadro.</li>
+                    <li>Haz clic en la opción correcta (A, B, C o D).</li>
+                    <li>Si aciertas, pasas a la siguiente pregunta. Si te equivocas, pierdes una vida y puedes volver a intentar la misma pregunta.</li>
+                    <li>Si tienes dudas, presiona el signo de interrogación para ver la ayuda con los conceptos.</li>
+                </ol>
+
+                <h3>Oportunidades</h3>
+                <p>Tienes <strong>3 vidas</strong> por nivel. Cada respuesta incorrecta te quita una;
+                    si las pierdes todas, el juego termina.</p>
+
+                <h3>Al terminar</h3>
+                <p>Verás un resumen con tus aciertos al primer intento, los conceptos que conviene repasar
+                    y las preguntas en las que te equivocaste.</p>
+            </div>
+        </div>
+
+        <!-- Créditos -->
+        <div id="modalCreditos" class="modal modal-info" hidden>
+            <div class="modal-contenido creditos" role="dialog" aria-modal="true" aria-labelledby="creditosTitulo">
+                <button class="modal-cerrar" aria-label="Cerrar">&times;</button>
+                <h2 id="creditosTitulo">Créditos</h2>
+
+                <h3>Versión original en JavaScript y HTML</h3>
+                <p>UNAM-DGAPA-PAPIME PE106426</p>
+
+                <h3>Versión HTML5</h3>
+                <p>Facultad de Estudios Superiores Aragón, UNAM</p>
+
+                <h3>Idea original</h3>
+                <p>Dr. Nelly Rigaud Téllez</p>
+
+                <h3>Coordinación</h3>
+                <p>Dr. Nelly Rigaud Téllez</p>
+
+                <h3>Programación original</h3>
+                <p>Alan Marco Velazquez Montiel</p>
+
+                <h3>Diseño original</h3>
+                <p>Leslie Pamela Flores Solache</p>
+
+                <h3>Revisión técnica</h3>
+                <p>
+                    Act. Luz María Lavin Alanis<br>
+                    Dr. Rigoberto León Sánchez<br>
+                    Mtro. Roberto Blanco Bautista<br>
+                    Mtro. Víctor Francisco Rodríguez Pérez
+                </p>
+
+                <p class="creditos-licencia">D.R. &copy; 2026, UNAM. CC BY-NC-ND</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- defer: se ejecuta después de KaTeX -->
+    <script defer src="juego.js"></script>
+
+</body>
+
+</html>
