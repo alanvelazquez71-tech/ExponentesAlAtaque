@@ -68,6 +68,18 @@
 
         </div>
 
+        <!-- Regresar al menú principal y música -->
+        <div id="controles">
+            <button id="btnRegresar" class="boton-regresar" aria-label="Regresar al menú principal">&#9664; Menú</button>
+            <button id="btnMusica" class="boton-regresar boton-musica" aria-label="Silenciar música">&#9835;</button>
+        </div>
+
+        <!-- Logos institucionales -->
+        <div id="logos">
+            <img src="./public/logos/dgapa.png" alt="UNAM - DGAPA">
+            <img src="./public/logos/fes-aragon.png" alt="FES Aragón, UNAM">
+        </div>
+
         <div id="preguntas">
 
             <img class="pregunta" id="pregunta" src="./public/pregunta/RECUADRO PREGUNTA.png">
@@ -100,9 +112,9 @@
                 <p id="modalResultado"></p>
                 <ul class="modal-conceptos">
                     <li><strong>Coeficiente:</strong> el número que multiplica a la variable. En <span class="tex">5x^{3}</span> es <span class="tex">5</span>.</li>
-                    <li><strong>Base:</strong> lo que se multiplica por sí mismo. En <span class="tex">5x^{3}</span> es <span class="tex">x</span>.</li>
-                    <li><strong>Exponente:</strong> cuántas veces se multiplica la base. En <span class="tex">5x^{3}</span> es <span class="tex">3</span>.</li>
-                    <li><strong>Potencia:</strong> la multiplicación repetida. <span class="tex">x^{3} = x \cdot x \cdot x</span>.</li>
+                    <li><strong>Base:</strong> la cantidad o expresión sobre la que actúa el exponente. En <span class="tex">5x^{3}</span> es <span class="tex">x</span>.</li>
+                    <li><strong>Exponente:</strong> indica cuántas veces aparece la base como factor. En <span class="tex">5x^{3}</span> es <span class="tex">3</span>.</li>
+                    <li><strong>Potencia:</strong> expresión formada por una base y un exponente. Por ejemplo, <span class="tex">x^{3}</span>.</li>
                     <li><strong>Radical:</strong> el signo de raíz <span class="tex">\sqrt{\ }</span>.</li>
                     <li><strong>Radicando:</strong> lo que está dentro de la raíz. En <span class="tex">\sqrt[3]{5x^{2}}</span> es <span class="tex">5x^{2}</span>.</li>
                     <li><strong>Índice:</strong> el número pequeño de la raíz. En <span class="tex">\sqrt[3]{5x^{2}}</span> es <span class="tex">3</span>; si no aparece, es <span class="tex">2</span>.</li>
@@ -112,7 +124,8 @@
 
         <!-- Selección de nivel (al iniciar) -->
         <div id="modalNiveles" class="modal">
-            <div class="modal-contenido selector-niveles" role="dialog" aria-modal="true" aria-labelledby="nivelesTitulo">
+            <div class="modal-contenido selector-niveles" role="dialog" aria-modal="true" aria-labelledby="tituloJuego">
+                <h1 id="tituloJuego" class="titulo-juego">Exponentes al ataque</h1>
                 <h2 id="nivelesTitulo">Elige un nivel</h2>
                 <p>Cada nivel tiene 8 preguntas elegidas al azar.</p>
                 <button class="boton-nivel" data-nivel="1"><img src="./public/niveles/N1.png" alt="Nivel 1"></button>
@@ -139,7 +152,7 @@
                 <h3>¿En qué consiste?</h3>
                 <p>El juego pone a prueba lo que sabes sobre la notación de exponentes y radicales:
                     identificar la base, el coeficiente, el exponente, la potencia, el radicando y el índice
-                    del radical en distintas expresiones.</p>
+                    del radical en distintas expresione algebraicas.</p>
 
                 <h3>¿Cómo se juega?</h3>
                 <ol class="lista-info">
@@ -166,17 +179,19 @@
                 <button class="modal-cerrar" aria-label="Cerrar">&times;</button>
                 <h2 id="creditosTitulo">Créditos</h2>
 
-                <h3>Versión original en JavaScript y HTML</h3>
-                <p>UNAM-DGAPA-PAPIME PE106426</p>
+                <h3>Facultad de Estudios Superiores Aragón, UNAM</h3>
 
-                <h3>Versión HTML5</h3>
-                <p>Facultad de Estudios Superiores Aragón, UNAM</p>
+
+                <h3>UNAM-DGAPA-PAPIME PE106426</h3>
+
+                <h3>Versión original en JavaScript y HTML</h3>
+
 
                 <h3>Idea original</h3>
-                <p>Dr. Nelly Rigaud Téllez</p>
+                <p>Dra. Nelly Rigaud Téllez</p>
 
                 <h3>Coordinación</h3>
-                <p>Dr. Nelly Rigaud Téllez</p>
+                <p>Dra. Nelly Rigaud Téllez</p>
 
                 <h3>Programación original</h3>
                 <p>Alan Marco Velazquez Montiel</p>
@@ -186,7 +201,7 @@
 
                 <h3>Revisión técnica</h3>
                 <p>
-                    Act. Luz María Lavin Alanis<br>
+                    Act. Luz María Lavín Alanis<br>
                     Dr. Rigoberto León Sánchez<br>
                     Mtro. Roberto Blanco Bautista<br>
                     Mtro. Víctor Francisco Rodríguez Pérez
@@ -199,6 +214,7 @@
     </div>
 
     <!-- defer: se ejecuta después de KaTeX -->
+    <script defer src="musica.js"></script>
     <script defer src="juego.js"></script>
 
 </body>

@@ -373,17 +373,19 @@ function juegoGanado() {
 
 /* ---------- Retroalimentación final ---------- */
 
+// Los fragmentos entre $...$ se dibujan con KaTeX
 const CONSEJOS = {
-    'coeficiente': 'El coeficiente es el número que multiplica a la variable. Si no aparece, vale 1 (o −1 si hay un signo menos).',
-    'base': 'La base es lo que se multiplica por sí mismo; es lo que está "abajo" del exponente, sin el coeficiente.',
-    'exponente': 'El exponente es el número pequeño arriba de la base. Si no aparece, vale 1.',
-    'potencia': 'La potencia es la multiplicación repetida de la base: x³ = x · x · x (el coeficiente no se repite).',
-    'radicando': 'El radicando es todo lo que queda dentro del signo de raíz.',
-    'índice': 'El índice es el número pequeño en la raíz. En la raíz cuadrada no se escribe y vale 2.'
+    'coeficiente': 'El coeficiente es el número que multiplica a la variable o a una expresión. Si no aparece escrito, su valor es $1$; si solo aparece signo menos, su valor es $-1$.',
+    'base': 'La base es la cantidad o expresión sobre la que actúa un exponente. Puede ser una variable, un número o una expresión, por ejemplo, en $(x+1)^{2}$, la base es $x+1$.',
+    'exponente': 'El exponente indica cuántas veces se usa la base como factor. Se escribe como un número pequeño colocado arriba y a la derecha de la base (superíndice).',
+    'potencia': 'La potencia es la expresión formada por una base y un exponente. El exponente indica cuántas veces aparece la base como factor, por ejemplo, $5x^{3} = 5 \\cdot x \\cdot x \\cdot x$. El coeficiente no se repite.',
+    'radical': 'El radical es el símbolo de raíz $\\sqrt{\\ }$.',
+    'radicando': 'El radicando es la expresión que se encuentra dentro del radical.',
+    'índice': 'El índice se identifica por un número pequeño en el radical, e indica qué raíz calcula. Por ejemplo, el índice 3 señala una raíz cúbica $\\sqrt[3]{x}$. Cuando no aparece un índice, se entiende que es 2, o sea, una raíz cuadrada.'
 };
 
 function conceptoDe(reactivo) {
-    const m = reactivo.pregunta.match(/coeficiente|base|exponente|potencia|radicando|índice/i);
+    const m = reactivo.pregunta.match(/coeficiente|base|exponente|potencia|radicando|radical|índice/i);
     return m ? m[0].toLowerCase() : 'otro';
 }
 
@@ -445,7 +447,7 @@ function mostrarRetro(gano) {
         const ul = document.createElement('ul');
         debiles.forEach(c => {
             const li = document.createElement('li');
-            li.textContent = CONSEJOS[c];
+            renderTextoConMath(li, CONSEJOS[c]);
             ul.appendChild(li);
         });
         cont.appendChild(ul);
@@ -494,5 +496,30 @@ function mostrarRetro(gano) {
     document.getElementById('modalRetro').hidden = false;
 }
 
+/* ---------- Regresar al menú principal ---------- */
 
+document.getElementById('btnRegresar').addEventListener('click', () => {
+    const enPartida = document.getElementById('modalNiveles').hidden;
+    if (enPartida && !confirm('¿Regresar al menú principal? Se perderá el avance de esta partida.')) return;
+    location.reload(); // vuelve a la pantalla inicial con todo reiniciado
+});
 
+/* ---------- Música de fondo (melodía original, ver musica.js) ---------- */
+
+crearMusica({
+    tempo: 132,
+    ondaMelodia: 'square',
+    melodia: [
+        // A: arpegios alegres  C - Am - F - G
+        'C5', 'E5', 'G5', 'E5', 'C6', '-', 'G5', '-',
+        'A4', 'C5', 'E5', 'C5', 'A5', '-', 'E5', '-',
+        'F4', 'A4', 'C5', 'A4', 'F5', '-', 'C5', '-',
+        'G4', 'B4', 'D5', 'B4', 'G5', 'F5', 'E5', 'D5',
+        // B: frase cantable sobre los mismos acordes
+        'E5', '-', 'E5', 'G5', '-', 'E5', 'D5', 'C5',
+        'C5', '-', 'A4', 'C5', '-', 'E5', 'D5', '-',
+        'F5', '-', 'E5', 'D5', 'C5', '-', 'A4', 'C5',
+        'D5', '-', 'B4', 'G4', 'B4', 'D5', 'C5', '-'
+    ],
+    bajo: bajoSaltarin(['C3', 'A2', 'F2', 'G2', 'C3', 'A2', 'F2', 'G2'])
+}).conectarBoton(document.getElementById('btnMusica'));

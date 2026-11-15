@@ -12,7 +12,7 @@ body {
     align-items: center;
     background-color: #222;
     min-height: 100dvh;
-    overflow: hidden;   /* el botón de ayuda sobresale un poco del escenario */
+    overflow: hidden;
 }
 
 /* El juego se diseñó a 1400x800. --u equivale a 1px de ese diseño:
@@ -134,16 +134,35 @@ body {
     cursor: pointer;
 }
 
+/* Esquina inferior derecha, sobre el pasto */
 #ayuda {
     position: absolute;
-    top: 5%;
-    right: -5%;
-    width: calc(165 * var(--u));
-    aspect-ratio: 1 / 1;
+    bottom: 3%;
+    right: 2%;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     z-index: 10;
+}
+
+/* Logos: esquina superior derecha, encima de los incisos */
+#logos {
+    position: absolute;
+    top: 3%;
+    right: 2%;
+    display: flex;
+    align-items: center;
+    gap: calc(14 * var(--u));
+    padding: calc(8 * var(--u)) calc(14 * var(--u));
+    background: rgba(232, 210, 160, 0.9);
+    border: calc(3 * var(--u)) solid #5a3a1e;
+    border-radius: calc(10 * var(--u));
+    z-index: 10;
+    pointer-events: none;
+}
+
+#logos img {
+    display: block;
+    height: calc(64 * var(--u));
+    width: auto;
 }
 
 /* Parpadeo del corazón antes de perderse */
@@ -431,6 +450,18 @@ body {
     text-align: center;
 }
 
+.titulo-juego {
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #5a3a1e;
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #8a3b12;
+    text-shadow: 2px 2px 0 #3b2412;
+}
+
 .boton-nivel {
     display: block;
     margin: 12px auto;
@@ -551,6 +582,12 @@ body {
         margin-top: 10px;
     }
 
+    .titulo-juego {
+        font-size: 24px;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+    }
+
     .boton-nivel {
         margin: 6px auto;
     }
@@ -564,4 +601,59 @@ body {
         font-size: 14px;
         padding: 8px 14px;
     }
+}
+
+/* Botón regresar: esquina inferior izquierda */
+#controles {
+    position: absolute;
+    left: 2%;
+    bottom: 3%;
+    z-index: 10;
+    display: flex;
+    gap: calc(10 * var(--u));
+}
+
+.boton-regresar {
+    padding: calc(10 * var(--u)) calc(18 * var(--u));
+    border: calc(3 * var(--u)) solid #5a3a1e;
+    border-radius: calc(10 * var(--u));
+    background: rgba(232, 210, 160, 0.95);
+    color: #3b2412;
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: max(11px, calc(20 * var(--u)));
+    cursor: pointer;
+    box-shadow: 0 calc(4 * var(--u)) 0 #5a3a1e;
+    transition: transform 0.15s ease;
+}
+
+.boton-regresar:hover {
+    transform: scale(1.08);
+}
+
+.boton-regresar:active {
+    transform: translateY(calc(3 * var(--u)));
+    box-shadow: 0 calc(1 * var(--u)) 0 #5a3a1e;
+}
+
+/* Botón de música: tachado cuando está silenciada */
+.boton-musica {
+    position: relative;
+    min-width: calc(54 * var(--u));
+}
+
+.boton-musica.apagada {
+    opacity: 0.6;
+}
+
+.boton-musica.apagada::after {
+    content: '';
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    top: 50%;
+    height: calc(3 * var(--u));
+    min-height: 2px;
+    background: currentColor;
+    transform: rotate(-45deg);
 }
